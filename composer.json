@@ -1,5 +1,5 @@
 {
-  "name": "wouter-nl/baum",
+  "name": "naugrimm/baum",
   "type": "library",
   "description": "Baum is an implementation of the Nested Set pattern for Eloquent models.",
   "keywords": ["nested set", "laravel", "laravel 5", "eloquent", "database"],
