@@ -79,6 +79,15 @@ class SetValidator
                 'left outer')
             ->whereRaw($whereStm);
 
+        if ($this->node->isScoped()) {
+            foreach ($this->node->getScopedColumns() as $scopedColumn) {
+                if ($this->node->{$scopedColumn}) {
+                    //only apply the scope if a specific node is given.
+                    $query = $query->where($tableName . "." . $scopedColumn, "=", $this->node->{$scopedColumn});
+                }
+            }
+        }
+
         return ($query->count() == 0);
     }
 
@@ -103,8 +112,18 @@ class SetValidator
      */
     protected function validateRoots()
     {
-        $roots = forward_static_call([get_class($this->node), 'roots'])->get();
+        $query = forward_static_call([get_class($this->node), 'roots']);
 
+        if ($this->node->isScoped()) {
+            foreach ($this->node->getScopedColumns() as $scopedColumn) {
+                if ($this->node->{$scopedColumn}) {
+                    //only apply the scope if a specific node is given.
+                    $query = $query->where($scopedColumn, "=", $this->node->{$scopedColumn});
+                }
+            }
+        }
+
+        $roots = $query->get();
         // If a scope is defined in the model we should check that the roots are
         // valid *for each* value in the scope columns.
         if ($this->node->isScoped()) {
@@ -139,6 +158,15 @@ class SetValidator
 
         foreach ($columns as $col) {
             $query->groupBy($col);
+        }
+
+        if ($this->node->isScoped()) {
+            foreach ($this->node->getScopedColumns() as $scopedColumn) {
+                if ($this->node->{$scopedColumn}) {
+                    //only apply the scope if a specific node is given.
+                    $query = $query->where($scopedColumn, "=", $this->node->{$scopedColumn});
+                }
+            }
         }
 
         $result = $query->first();

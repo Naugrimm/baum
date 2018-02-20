@@ -413,8 +413,10 @@ abstract class Node extends Model
         $instance = new static;
 
         return $instance->newQuery()
-            ->whereNull($instance->getParentColumnName())
-            ->orWhere($instance->getParentColumnName(), 0)
+            ->where(function ($query) use ($instance) {
+                return $query->whereNull($instance->getParentColumnName())
+                    ->orWhere($instance->getParentColumnName(), 0);
+            })
             ->orderBy($instance->getQualifiedOrderColumnName());
     }
 
@@ -465,9 +467,12 @@ abstract class Node extends Model
      *
      * @return bool
      */
-    public static function isValidNestedSet()
+    public static function isValidNestedSet($node = null)
     {
-        $validator = new SetValidator(new static );
+        if ($node === null) {
+            $node = new static;
+        }
+        $validator = new SetValidator($node);
         return $validator->passes();
     }
 
