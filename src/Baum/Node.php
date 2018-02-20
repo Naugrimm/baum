@@ -481,9 +481,12 @@ abstract class Node extends Model
      *
      * @return void
      */
-    public static function rebuild()
+    public static function rebuild($node = null)
     {
-        $builder = new SetBuilder(new static );
+        if ($node === null) {
+            $node = new static;
+        }
+        $builder = new SetBuilder($node);
         $builder->rebuild();
     }
 

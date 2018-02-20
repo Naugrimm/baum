@@ -44,11 +44,11 @@ class SetBuilder
         // setting the right indexes and saving the nodes...
         $self = $this;
 
-        $this->node->getConnection()->transaction(function () use ($self) {
-            foreach ($self->roots() as $root) {
-                $self->rebuildBounds($root, 0);
-            }
-        });
+        $this->node->getConnection()->beginTransaction();
+        foreach ($self->roots() as $root) {
+            $self->rebuildBounds($root, 0);
+        }
+        $this->node->getConnection()->commit();
     }
 
     /**
@@ -58,9 +58,11 @@ class SetBuilder
      */
     public function roots()
     {
-        return $this->node->newQuery()
-            ->whereNull($this->node->getQualifiedParentColumnName())
-            ->orWhere($this->node->getQualifiedParentColumnName(), 0)
+        return $this->node->newNestedSetQuery()
+            ->where(function ($query) {
+                return $query->whereNull($this->node->getQualifiedParentColumnName())
+                    ->orWhere($this->node->getQualifiedParentColumnName(), 0);
+            })
             ->orderBy($this->node->getQualifiedLeftColumnName())
             ->orderBy($this->node->getQualifiedRightColumnName())
             ->orderBy($this->node->getQualifiedKeyName())
