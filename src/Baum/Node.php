@@ -1176,7 +1176,7 @@ abstract class Node extends Model
     {
         $pid = static::$moveToNewParentId;
 
-        if (is_null($pid) || $pid == 0) {
+        if (is_null($pid) || $pid === 0) {
             $this->makeRoot();
         } elseif ($pid !== false) {
             $this->makeChildOf($pid);
