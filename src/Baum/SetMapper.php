@@ -8,10 +8,10 @@ use Illuminate\Support\Contracts\ArrayableInterface;
 class SetMapper
 {
     /**
-    * Node instance for reference.
-    *
-    * @var \Baum\Node
-    */
+     * Node instance for reference.
+     *
+     * @var \Baum\Node
+     */
     protected $node = null;
 
     /**
@@ -104,7 +104,7 @@ class SetMapper
             $node = $this->firstOrNew($this->getSearchAttributes($attributes));
 
             $data = $this->getDataAttributes($attributes);
-            if (! is_null($parentKey)) {
+            if (!is_null($parentKey)) {
                 $data[$node->getParentColumnName()] = $parentKey;
             }
 
@@ -112,7 +112,7 @@ class SetMapper
 
             $result = $node->save();
 
-            if (! $result) {
+            if (!$result) {
                 return false;
             }
 

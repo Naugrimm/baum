@@ -36,9 +36,9 @@ class Collection extends BaseCollection
         foreach ($result as $key => $node) {
             $parentKey = $node->getParentId();
 
-            if (! is_null($parentKey) && array_key_exists($parentKey, $result)) {
+            if (!is_null($parentKey) && array_key_exists($parentKey, $result)) {
                 $result[$parentKey]->children[] = $node;
-                $nestedKeys[] = $node->getKey();
+                $nestedKeys[]                   = $node->getKey();
             }
         }
 
