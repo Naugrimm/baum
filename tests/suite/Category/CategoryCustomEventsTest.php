@@ -17,7 +17,7 @@ class CategoryCustomEventsTest extends CategoryTestCase
         $child = $this->categories('Child 1');
 
         $events->shouldReceive('until')->once()->with('eloquent.moving: '.get_class($child), $child)->andReturn(true);
-        $events->shouldReceive('fire')->once()->with('eloquent.moved: '.get_class($child), $child)->andReturn(true);
+        $events->shouldReceive('dispatch')->once()->with('eloquent.moved: '.get_class($child), $child)->andReturn(true);
 
         $child->moveToRightOf($this->categories('Child 3'));
 
