@@ -360,7 +360,7 @@ abstract class Node extends Model
 
         if ($this->isScoped()) {
             foreach ($this->scoped as $scopeFld) {
-                $builder->where($scopeFld, '=', $this->$scopeFld);
+                $builder->where($scopeFld, '=', $this->{$scopeFld});
             }
         }
 
@@ -444,7 +444,7 @@ abstract class Node extends Model
      * Static query scope. Returns a query scope with all nodes which are at
      * the middle of a branch (not root and not leaves).
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public static function allTrunks()
     {
@@ -479,6 +479,7 @@ abstract class Node extends Model
     /**
      * Rebuilds the structure of the current Nested Set.
      *
+     * @param null $node
      * @return void
      */
     public static function rebuild($node = null)
