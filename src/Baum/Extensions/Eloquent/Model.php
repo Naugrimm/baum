@@ -54,9 +54,9 @@ abstract class Model extends BaseModel
      * @param  Closure|string  $callback
      * @return void
      */
-    public static function moving($callback, $priority = 0)
+    public static function moving($callback)
     {
-        static::registerModelEvent('moving', $callback, $priority);
+        static::registerModelEvent('moving', $callback);
     }
 
     /**
@@ -65,9 +65,9 @@ abstract class Model extends BaseModel
      * @param  Closure|string  $callback
      * @return void
      */
-    public static function moved($callback, $priority = 0)
+    public static function moved($callback)
     {
-        static::registerModelEvent('moved', $callback, $priority);
+        static::registerModelEvent('moved', $callback);
     }
 
     /**
