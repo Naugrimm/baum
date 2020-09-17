@@ -4,7 +4,7 @@ use Mockery as m;
 
 class CategoryCustomEventsTest extends CategoryTestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
@@ -12,7 +12,7 @@ class CategoryCustomEventsTest extends CategoryTestCase
     public function testMovementEventsFire()
     {
         $dispatcher = Category::getEventDispatcher();
-        Category::setEventDispatcher($events = m::mock('Illuminate\Events\Dispatcher'));
+        Category::setEventDispatcher($events = m::mock('Illuminate\Events\Dispatcher')->makePartial());
 
         $child = $this->categories('Child 1');
 

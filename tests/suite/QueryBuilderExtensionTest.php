@@ -2,10 +2,11 @@
 
 use Mockery as m;
 use Baum\Extensions\Query\Builder as QueryBuilder;
+use PHPUnit\Framework\TestCase;
 
-class QueryBuilderExtensionTest extends PHPUnit_Framework_TestCase
+class QueryBuilderExtensionTest extends TestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }

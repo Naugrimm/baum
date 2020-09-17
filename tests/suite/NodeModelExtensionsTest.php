@@ -1,16 +1,18 @@
 <?php
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Mockery as m;
 use Illuminate\Database\Capsule\Manager as DB;
+use PHPUnit\Framework\TestCase;
 
-class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
+class NodeModelExtensionsTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         with(new CategoryMigrator)->up();
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         DB::table('categories')->delete();
     }
@@ -20,7 +22,7 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
         return forward_static_call_array([$className, 'where'], ['name', '=', $name])->first();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
@@ -64,7 +66,7 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
         Category::setEventDispatcher($events = m::mock('Illuminate\Contracts\Events\Dispatcher'));
 
         $closure = function () {};
-        $events->shouldReceive('listen')->once()->with('eloquent.moving: '.get_class(new Category), $closure, 0);
+        $events->shouldReceive('listen')->once()->with('eloquent.moving: '.get_class(new Category), $closure);
         Category::moving($closure);
 
         Category::unsetEventDispatcher();
@@ -79,7 +81,7 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
         Category::setEventDispatcher($events = m::mock('Illuminate\Contracts\Events\Dispatcher'));
 
         $closure = function () {};
-        $events->shouldReceive('listen')->once()->with('eloquent.moved: '.get_class(new Category), $closure, 0);
+        $events->shouldReceive('listen')->once()->with('eloquent.moved: '.get_class(new Category), $closure);
         Category::moved($closure);
 
         Category::unsetEventDispatcher();
@@ -122,22 +124,20 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Some node', $node->name);
     }
 
-  /**
-   * @expectedException Illuminate\Database\Eloquent\ModelNotFoundException
-   */
-  public function testReloadThrowsExceptionIfNodeCannotBeLocated()
-  {
-      $node = Category::create(['name' => 'Some node']);
-      $this->assertNotNull($node->getKey());
+    public function testReloadThrowsExceptionIfNodeCannotBeLocated()
+    {
+        $this->expectException(ModelNotFoundException::class);
+        $node = Category::create(['name' => 'Some node']);
+        $this->assertNotNull($node->getKey());
 
-      $node->delete();
-      $this->assertNull($this->categories('Some node'));
-      $this->assertFalse($node->exists);
+        $node->delete();
+        $this->assertNull($this->categories('Some node'));
+        $this->assertFalse($node->exists);
 
-    // Fake persisted state, reload & expect failure
-    $node->exists = true;
-      $node->reload();
-  }
+        // Fake persisted state, reload & expect failure
+        $node->exists = true;
+        $node->reload();
+    }
 
     public function testNewNestedSetQueryUsesInternalBuilder()
     {
@@ -154,7 +154,8 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
         $builder = $category->newNestedSetQuery();
         $query = $builder->getQuery();
 
-        $this->assertNull($query->wheres);
+        var_dump($query->wheres);
+        $this->assertEquals($query->wheres, []);
         $this->assertNotEmpty($query->orders);
         $this->assertEquals($category->getLeftColumnName(), $category->getOrderColumnName());
         $this->assertEquals($category->getQualifiedLeftColumnName(), $category->getQualifiedOrderColumnName());
@@ -167,7 +168,7 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
         $builder = $category->newNestedSetQuery();
         $query = $builder->getQuery();
 
-        $this->assertNull($query->wheres);
+        $this->assertEquals($query->wheres, []);
         $this->assertNotEmpty($query->orders);
         $this->assertEquals('name', $category->getOrderColumnName());
         $this->assertEquals('categories.name', $category->getQualifiedOrderColumnName());
@@ -178,7 +179,7 @@ class NodeModelExtensionsTest extends PHPUnit_Framework_TestCase
     {
         $category = new Category;
         $simpleQuery = $category->newNestedSetQuery()->getQuery();
-        $this->assertNull($simpleQuery->wheres);
+        $this->assertEquals($simpleQuery->wheres, []);
 
         $scopedCategory = new ScopedCategory;
         $scopedQuery = $scopedCategory->newNestedSetQuery()->getQuery();
