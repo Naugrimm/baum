@@ -54,11 +54,18 @@ class SetBuilder
     /**
      * Return all root nodes for the current database table appropiately sorted.
      *
-     * @return Illuminate\Database\Eloquent\Collection
+     * @return Node[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function roots()
     {
-        return $this->node->newNestedSetQuery()
+        $query = null;
+        if ($this->node->getKey()) {
+            $query = $this->node->newNestedSetQuery();
+        } else {
+            $query = $this->node->newQuery();
+        }
+
+        return $query
             ->where(function ($query) {
                 return $query->whereNull($this->node->getQualifiedParentColumnName())
                     ->orWhere($this->node->getQualifiedParentColumnName(), 0);

@@ -4,7 +4,7 @@ use Mockery as m;
 
 class CategoryCustomEventsTest extends CategoryTestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
@@ -12,7 +12,7 @@ class CategoryCustomEventsTest extends CategoryTestCase
     public function testMovementEventsFire()
     {
         $dispatcher = Category::getEventDispatcher();
-        Category::setEventDispatcher($events = m::mock('Illuminate\Events\Dispatcher'));
+        Category::setEventDispatcher($events = m::mock('Illuminate\Events\Dispatcher')->makePartial());
 
         $child = $this->categories('Child 1');
 
@@ -23,6 +23,8 @@ class CategoryCustomEventsTest extends CategoryTestCase
 
         Category::unsetEventDispatcher();
         Category::setEventDispatcher($dispatcher);
+
+        $this->assertEquals('Child 3', $child->getLeftSibling()->name);
     }
 
     public function testMovementHaltsWhenReturningFalseFromMoving()
@@ -34,8 +36,8 @@ class CategoryCustomEventsTest extends CategoryTestCase
         Category::setEventDispatcher($events = m::mock('Illuminate\Events\Dispatcher[until]'));
         $events->shouldReceive('until')->once()->with('eloquent.moving: '.get_class($unchanged), $unchanged)->andReturn(false);
 
-    // Force "moving" to return false
-    Category::moving(function ($node) { return false; });
+        // Force "moving" to return false
+        Category::moving(function ($node) { return false; });
 
         $unchanged->makeRoot();
 
@@ -46,8 +48,8 @@ class CategoryCustomEventsTest extends CategoryTestCase
         $this->assertEquals(4, $unchanged->getLeft());
         $this->assertEquals(7, $unchanged->getRight());
 
-    // Restore
-    Category::getEventDispatcher()->forget('eloquent.moving: '.get_class($unchanged));
+        // Restore
+        Category::getEventDispatcher()->forget('eloquent.moving: '.get_class($unchanged));
 
         Category::unsetEventDispatcher();
         Category::setEventDispatcher($dispatcher);
