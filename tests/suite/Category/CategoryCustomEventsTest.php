@@ -23,6 +23,8 @@ class CategoryCustomEventsTest extends CategoryTestCase
 
         Category::unsetEventDispatcher();
         Category::setEventDispatcher($dispatcher);
+
+        $this->assertEquals('Child 3', $child->getLeftSibling()->name);
     }
 
     public function testMovementHaltsWhenReturningFalseFromMoving()
