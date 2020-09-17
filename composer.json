@@ -24,14 +24,14 @@
   ],
   "require": {
     "php": ">=7.3",
-    "illuminate/console": "^5.8|^6.0|^7.0",
-    "illuminate/database": "^5.8|^6.0|^7.0",
-    "illuminate/events": "^5.8|^6.0|^7.0",
-    "illuminate/filesystem": "^5.8|^6.0|^7.0",
-    "illuminate/support": "^5.8|^6.0|^7.0"
+    "illuminate/console": "^7.0|^8.0",
+    "illuminate/database": "^7.0|^8.0",
+    "illuminate/events": "^7.0|^8.0",
+    "illuminate/filesystem": "^7.0|^8.0",
+    "illuminate/support": "^7.0|^8.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.5",
+    "phpunit/phpunit": "^9.0",
     "mockery/mockery": "^1.3.1",
     "d11wtq/boris": "~1.0.10",
     "satooshi/php-coveralls": "^2.2"
