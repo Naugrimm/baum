@@ -36,8 +36,8 @@ class CategoryCustomEventsTest extends CategoryTestCase
         Category::setEventDispatcher($events = m::mock('Illuminate\Events\Dispatcher[until]'));
         $events->shouldReceive('until')->once()->with('eloquent.moving: '.get_class($unchanged), $unchanged)->andReturn(false);
 
-    // Force "moving" to return false
-    Category::moving(function ($node) { return false; });
+        // Force "moving" to return false
+        Category::moving(function ($node) { return false; });
 
         $unchanged->makeRoot();
 
@@ -48,8 +48,8 @@ class CategoryCustomEventsTest extends CategoryTestCase
         $this->assertEquals(4, $unchanged->getLeft());
         $this->assertEquals(7, $unchanged->getRight());
 
-    // Restore
-    Category::getEventDispatcher()->forget('eloquent.moving: '.get_class($unchanged));
+        // Restore
+        Category::getEventDispatcher()->forget('eloquent.moving: '.get_class($unchanged));
 
         Category::unsetEventDispatcher();
         Category::setEventDispatcher($dispatcher);
