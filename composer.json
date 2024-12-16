@@ -34,11 +34,30 @@
     "phpunit/phpunit": "^10.0",
     "mockery/mockery": "^1.6",
     "d11wtq/boris": "~1.0.10",
-    "php-coveralls/php-coveralls": "^2.5"
+    "php-coveralls/php-coveralls": "^2.5",
+    "phpstan/phpstan": "^1.10",
+    "phpstan/phpstan-deprecation-rules": "^1.1",
+    "nunomaduro/larastan": "^2.6",
+    "symplify/coding-standard": "^12.0",
+    "symplify/easy-coding-standard": "^12.0",
+    "orchestra/testbench": "^8.15"
   },
   "autoload": {
     "psr-0": {
       "Baum": "src/"
     }
+  },
+  "scripts": {
+    "cs": "@php vendor/bin/ecs check ",
+    "fs": "@php vendor/bin/ecs check --fix ",
+    "phpstan": [
+      "Composer\\Config::disableProcessTimeout",
+      "@putenv RUN_PHPSTAN=true",
+      "@php -dmemory_limit=1G ./vendor/bin/phpstan analyse"
+    ],
+    "phpstan-all": [
+      "Composer\\Config::disableProcessTimeout",
+      "@php -dmemory_limit=1G ./vendor/bin/phpstan analyse src tests"
+    ]
   }
 }
