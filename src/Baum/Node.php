@@ -314,7 +314,7 @@ abstract class Node extends Model
     /**
      * Children relation (self-referential) 1-N.
      *
-     * @return HasMany<Node>
+     * @return HasMany<Node,Node>
      */
     public function children(): HasMany
     {
@@ -827,7 +827,7 @@ abstract class Node extends Model
     /**
      * Set of "immediate" descendants (aka children), alias for the children relation.
      *
-     * @return HasMany<Node>
+     * @return HasMany<Node,Node>
      */
     public function immediateDescendants(): HasMany
     {
@@ -1161,15 +1161,10 @@ abstract class Node extends Model
      * Prunes a branch off the tree, shifting all the elements on the right
      * back to the left so the counts work.
      *
-     * @return void;
+     * @return void
      */
     public function destroyDescendants(): void
     {
-        // @TODO REMOVE?
-        //        if ($this->getRight() === null || $this->getLeft() === null) {
-        //            return;
-        //        }
-
         $self = $this;
         $this->getConnection()
             ->transaction(function () use ($self) {
@@ -1210,13 +1205,7 @@ abstract class Node extends Model
      */
     public function shiftSiblingsForRestore(): void
     {
-        // @TODO REMOVE?
-        //        if ($this->getRight() === null || $this->getLeft() === null) {
-        //            return;
-        //        }
-
         $self = $this;
-
         $this->getConnection()
             ->transaction(function () use ($self) {
                 $lftCol = $self->getLeftColumnName();
@@ -1241,13 +1230,7 @@ abstract class Node extends Model
      */
     public function restoreDescendants(): void
     {
-        // @TODO REMOVE?
-        //        if ($this->getRight() === null || $this->getLeft() === null) {
-        //            return;
-        //        }
-
         $self = $this;
-
         $this->getConnection()
             ->transaction(function () use ($self) {
                 /** @phpstan-ignore-next-line  */

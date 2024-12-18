@@ -47,7 +47,9 @@ class Move
         protected string $position
     ) {
         $this->target = $this->resolveNode($target);
-        $this->setEventDispatcher($node->getEventDispatcher());
+        if ($dispatcher = $node->getEventDispatcher()) {
+            $this->setEventDispatcher($dispatcher);
+        }
     }
 
     /**

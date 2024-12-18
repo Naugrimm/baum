@@ -55,16 +55,20 @@ abstract class Model extends BaseModel
 
     /**
      * Register a moving model event with the dispatcher.
+     *
+     * @param callable|\Illuminate\Events\QueuedClosure|array<int,string>|class-string $callback
      */
-    public static function moving(Closure|string $callback): void
+    public static function moving(callable|\Illuminate\Events\QueuedClosure|array|string $callback): void
     {
         static::registerModelEvent('moving', $callback);
     }
 
     /**
      * Register a moved model event with the dispatcher.
+     *
+     * @param \Illuminate\Events\QueuedClosure|callable|array<int,string>|class-string $callback
      */
-    public static function moved(Closure|string $callback): void
+    public static function moved(callable|\Illuminate\Events\QueuedClosure|array|string $callback): void
     {
         static::registerModelEvent('moved', $callback);
     }
