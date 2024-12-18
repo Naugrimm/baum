@@ -1,19 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Baum\Extensions\Eloquent;
 
+use Baum\Node;
 use Illuminate\Database\Eloquent\Collection as BaseCollection;
 
+/**
+ * @extends BaseCollection<int,Node>
+ */
 class Collection extends BaseCollection
 {
-    public function toHierarchy()
+    /**
+     * @return BaseCollection<int,\Illuminate\Database\Eloquent\Model>
+     */
+    public function toHierarchy(): BaseCollection
     {
         $dict = $this->getDictionary();
 
         return new BaseCollection($this->hierarchical($dict));
     }
 
-    public function toSortedHierarchy()
+    /**
+     * @return BaseCollection<int,\Illuminate\Database\Eloquent\Model>
+     */
+    public function toSortedHierarchy(): BaseCollection
     {
         $dict = $this->getDictionary();
 
@@ -25,20 +37,25 @@ class Collection extends BaseCollection
         return new BaseCollection($this->hierarchical($dict));
     }
 
-    protected function hierarchical($result)
+    /**
+     * @param array<int,Node> $result
+     * @return array<int,Node>
+     */
+    protected function hierarchical(array $result): array
     {
-        foreach ($result as $key => $node) {
-            $node->setRelation('children', new BaseCollection);
+        foreach ($result as $node) {
+            $node->setRelation('children', new BaseCollection());
         }
 
         $nestedKeys = [];
 
-        foreach ($result as $key => $node) {
+        foreach ($result as $node) {
             $parentKey = $node->getParentId();
 
-            if (!is_null($parentKey) && array_key_exists($parentKey, $result)) {
+            if ($parentKey !== null && array_key_exists($parentKey, $result)) {
+                /** @phpstan-ignore-next-line  */
                 $result[$parentKey]->children[] = $node;
-                $nestedKeys[]                   = $node->getKey();
+                $nestedKeys[] = $node->getKey();
             }
         }
 

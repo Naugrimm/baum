@@ -1,102 +1,82 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Baum\Generators;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 
 abstract class Generator
 {
     /**
-   * The filesystem instance.
-   *
-   * @var \Illuminate\Filesystem\Filesystem
-   */
-  protected $files = null;
+     * Create a new MigrationGenerator instance.
+     */
+    public function __construct(
+        protected Filesystem $files
+    ) {
+    }
 
-  /**
-   * Create a new MigrationGenerator instance.
-   *
-   * @param \Illuminate\Filesystem\Filesysmte $files
-   * @return void
-   */
-  public function __construct(Filesystem $files)
-  {
-      $this->files = $files;
-  }
+    /**
+     * Get the path to the stubs.
+     */
+    public function getStubPath(): string
+    {
+        return __DIR__ . '/stubs';
+    }
 
-  /**
-   * Get the path to the stubs.
-   *
-   * @return string
-   */
-  public function getStubPath()
-  {
-      return __DIR__.'/stubs';
-  }
+    /**
+     * Get the filesystem instance.
+     */
+    public function getFilesystem(): Filesystem
+    {
+        return $this->files;
+    }
 
-  /**
-   * Get the filesystem instance.
-   *
-   * @return \Illuminate\Filesystem\Filesystem
-   */
-  public function getFilesystem()
-  {
-      return $this->files;
-  }
+    /**
+     * Get the given stub by name.
+     * @throws FileNotFoundException
+     */
+    protected function getStub(string $name): string
+    {
+        if (stripos($name, '.stub') === false) {
+            $name = $name . '.stub';
+        }
 
-  /**
-   * Get the given stub by name.
-   *
-   * @param  string  $table
-   * @return void
-   */
-  protected function getStub($name)
-  {
-      if (stripos($name, '.php') === false) {
-          $name = $name.'.php';
-      }
+        return $this->files->get($this->getStubPath() . '/' . $name);
+    }
 
-      return $this->files->get($this->getStubPath().'/'.$name);
-  }
+    /**
+     * Parse the provided stub and replace via the array given.
+     *
+     * @param array<string,string> $replacements
+     */
+    protected function parseStub(string $stub, array $replacements = []): string
+    {
+        $output = $stub;
 
-  /**
-   * Parse the provided stub and replace via the array given.
-   *
-   * @param string $stub
-   * @param string $replacements
-   * @return string
-   */
-  protected function parseStub($stub, $replacements = [])
-  {
-      $output = $stub;
+        foreach ($replacements as $key => $replacement) {
+            $search = '{{' . $key . '}}';
+            $output = str_replace($search, $replacement, $output);
+        }
 
-      foreach ($replacements as $key => $replacement) {
-          $search = '{{'.$key.'}}';
-          $output = str_replace($search, $replacement, $output);
-      }
+        return $output;
+    }
 
-      return $output;
-  }
+    /**
+     * Inflect to a class name.
+     */
+    protected function classify(string $input): string
+    {
+        return Str::of($input)->singular()->studly()->toString();
+    }
 
-  /**
-   * Inflect to a class name.
-   *
-   * @param string $input
-   * @return string
-   */
-  protected function classify($input)
-  {
-      return studly_case(str_singular($input));
-  }
-
-  /**
-   * Inflect to table name.
-   *
-   * @param string $input
-   * @return string
-   */
-  protected function tableize($input)
-  {
-      return snake_case(str_plural($input));
-  }
+    /**
+     * Inflect to table name.
+     */
+    protected function tableize(string $input): string
+    {
+        return Str::of($input)->plural()->snake()->toString();
+    }
 }

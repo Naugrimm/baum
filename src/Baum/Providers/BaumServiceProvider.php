@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Baum\Providers;
 
 use Baum\Console\BaumCommand;
@@ -15,24 +17,20 @@ class BaumServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    const VERSION = '1.1.1';
+    public const VERSION = '1.1.1';
 
     /**
      * Register the service provider.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->registerCommands();
     }
 
     /**
      * Register the commands.
-     *
-     * @return void
      */
-    public function registerCommands()
+    public function registerCommands(): void
     {
         $this->registerBaumCommand();
         $this->registerInstallCommand();
@@ -44,26 +42,22 @@ class BaumServiceProvider extends ServiceProvider
 
     /**
      * Register the 'baum' command.
-     *
-     * @return void
      */
-    protected function registerBaumCommand()
+    protected function registerBaumCommand(): void
     {
         $this->app->singleton('command.baum', function ($app) {
-            return new BaumCommand;
+            return new BaumCommand();
         });
     }
 
     /**
      * Register the 'baum:install' command.
-     *
-     * @return void
      */
-    protected function registerInstallCommand()
+    protected function registerInstallCommand(): void
     {
         $this->app->singleton('command.baum.install', function ($app) {
             $migrator = new MigrationGenerator($app['files']);
-            $modeler  = new ModelGenerator($app['files']);
+            $modeler = new ModelGenerator($app['files']);
 
             return new InstallCommand($migrator, $modeler);
         });
@@ -72,9 +66,9 @@ class BaumServiceProvider extends ServiceProvider
     /**
      * Get the services provided by the provider.
      *
-     * @return array
+     * @return array<int,string>
      */
-    public function provides()
+    public function provides(): array
     {
         return ['command.baum', 'command.baum.install'];
     }

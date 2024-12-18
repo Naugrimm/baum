@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Baum\Node;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Node
 {
@@ -22,14 +22,14 @@ class MultiScopedCategory extends Category
 
 class OrderedCategory extends Category
 {
-    protected $orderColumn = 'name';
+    protected ?string $orderColumn = 'name';
 }
 
 class OrderedScopedCategory extends Category
 {
     protected $scoped = ['company_id'];
 
-    protected $orderColumn = 'name';
+    protected ?string $orderColumn = 'name';
 }
 
 class SoftCategory extends Category

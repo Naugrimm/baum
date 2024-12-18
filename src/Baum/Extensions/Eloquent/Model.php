@@ -1,28 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Baum\Extensions\Eloquent;
 
 use Baum\Extensions\Query\Builder as QueryBuilder;
+use Baum\Node;
+use Closure;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/** @phpstan-consistent-constructor */
 abstract class Model extends BaseModel
 {
     /**
      * Reloads the model from the database.
      *
-     * @return \Baum\Node
-     *
      * @throws ModelNotFoundException
      */
-    public function reload()
+    public function reload(): self
     {
+        /** @phpstan-ignore-next-line  */
         if ($this->exists || ($this->areSoftDeletesEnabled() && $this->trashed())) {
             $fresh = $this->getFreshInstance();
 
-            if (is_null($fresh)) {
-                throw with(new ModelNotFoundException)->setModel(get_called_class());
+            if ($fresh === null) {
+                throw (new ModelNotFoundException())
+                    ->setModel(static::class);
             }
 
             $this->setRawAttributes($fresh->getAttributes(), true);
@@ -41,9 +46,9 @@ abstract class Model extends BaseModel
     /**
      * Get the observable event names.
      *
-     * @return array
+     * @return array<int,string>
      */
-    public function getObservableEvents()
+    public function getObservableEvents(): array
     {
         return array_merge(['moving', 'moved'], parent::getObservableEvents());
     }
@@ -51,10 +56,9 @@ abstract class Model extends BaseModel
     /**
      * Register a moving model event with the dispatcher.
      *
-     * @param  Closure|string  $callback
-     * @return void
+     * @param callable|\Illuminate\Events\QueuedClosure|array<int,string>|class-string $callback
      */
-    public static function moving($callback)
+    public static function moving(callable|\Illuminate\Events\QueuedClosure|array|string $callback): void
     {
         static::registerModelEvent('moving', $callback);
     }
@@ -62,10 +66,9 @@ abstract class Model extends BaseModel
     /**
      * Register a moved model event with the dispatcher.
      *
-     * @param  Closure|string  $callback
-     * @return void
+     * @param \Illuminate\Events\QueuedClosure|callable|array<int,string>|class-string $callback
      */
-    public static function moved($callback)
+    public static function moved(callable|\Illuminate\Events\QueuedClosure|array|string $callback): void
     {
         static::registerModelEvent('moved', $callback);
     }
@@ -73,9 +76,9 @@ abstract class Model extends BaseModel
     /**
      * Get a new query builder instance for the connection.
      *
-     * @return \Baum\Extensions\Query\Builder
+     * @return QueryBuilder<BaseModel>
      */
-    protected function newBaseQueryBuilder()
+    protected function newBaseQueryBuilder(): QueryBuilder
     {
         $conn = $this->getConnection();
 
@@ -86,24 +89,22 @@ abstract class Model extends BaseModel
 
     /**
      * Returns a fresh instance from the database.
-     *
-     * @return \Baum\Node
      */
-    protected function getFreshInstance()
+    protected function getFreshInstance(): Node|null
     {
         if ($this->areSoftDeletesEnabled()) {
+            /** @phpstan-ignore-next-line  */
             return static::withTrashed()->find($this->getKey());
         }
 
+        /** @phpstan-ignore-next-line  */
         return static::find($this->getKey());
     }
 
     /**
      * Returns wether soft delete functionality is enabled on the model or not.
-     *
-     * @return bool
      */
-    public function areSoftDeletesEnabled()
+    public function areSoftDeletesEnabled(): bool
     {
         // To determine if there's a global soft delete scope defined we must
         // first determine if there are any, to workaround a non-existent key error.
@@ -115,17 +116,17 @@ abstract class Model extends BaseModel
 
         // Now that we're sure that the calling class has some kind of global scope
         // we check for the SoftDeletingScope existance
-        return static::hasGlobalScope(new SoftDeletingScope);
+        return static::hasGlobalScope(new SoftDeletingScope());
     }
 
     /**
      * Static method which returns wether soft delete functionality is enabled
      * on the model.
-     *
-     * @return bool
      */
-    public static function softDeletesEnabled()
+    public static function softDeletesEnabled(): bool
     {
-        return with(new static )->areSoftDeletesEnabled();
+        /** @phpstan-ignore-next-line  */
+        return (new static())
+            ->areSoftDeletesEnabled();
     }
 }

@@ -29,6 +29,7 @@ class QueryBuilderExtensionTest extends TestCase
 
     public function testAggregatesRemoveOrderBy()
     {
+        $this->expectNotToPerformAssertions();
         // TODO: Find out why this errors
     // $builder = $this->getBuilder();
     // $builder->getConnection()->shouldReceive('select')->once()->with('select count(*) as aggregate from "users"', array())->andReturn(array(array('aggregate' => 1)));

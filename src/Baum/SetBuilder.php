@@ -1,41 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Baum;
+
+use Illuminate\Database\Eloquent\Collection;
 
 class SetBuilder
 {
     /**
-     * Node instance for reference.
-     *
-     * @var \Baum\Node
-     */
-    protected $node = null;
-
-    /**
      * Array which will hold temporary lft, rgt index values for each scope.
      *
-     * @var array
+     * @var array<string,int>
      */
-    protected $bounds = [];
+    protected array $bounds = [];
 
     /**
      * Create a new \Baum\SetBuilder class instance.
-     *
-     * @param   \Baum\Node      $node
-     * @return  void
      */
-    public function __construct($node)
-    {
-        $this->node = $node;
+    public function __construct(
+        protected Node $node
+    ) {
     }
 
     /**
      * Perform the re-calculation of the left and right indexes of the whole
      * nested set tree structure.
      *
-     * @return void
+     * @throws \Throwable
      */
-    public function rebuild()
+    public function rebuild(): void
     {
         // Rebuild lefts and rights for each root node and its children (recursively).
         // We go by setting left (and keep track of the current left bound), then
@@ -44,21 +38,22 @@ class SetBuilder
         // setting the right indexes and saving the nodes...
         $self = $this;
 
-        $this->node->getConnection()->beginTransaction();
+        $this->node->getConnection()
+            ->beginTransaction();
         foreach ($self->roots() as $root) {
             $self->rebuildBounds($root, 0);
         }
-        $this->node->getConnection()->commit();
+        $this->node->getConnection()
+            ->commit();
     }
 
     /**
      * Return all root nodes for the current database table appropiately sorted.
      *
-     * @return Node[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return Collection<int,Node>
      */
-    public function roots()
+    public function roots(): Collection
     {
-        $query = null;
         if ($this->node->getKey()) {
             $query = $this->node->newNestedSetQuery();
         } else {
@@ -80,13 +75,14 @@ class SetBuilder
      * Recompute left and right index bounds for the specified node and its
      * children (recursive call). Fill the depth column too.
      */
-    public function rebuildBounds($node, $depth = 0)
+    public function rebuildBounds(Node $node, int $depth = 0): void
     {
         $k = $this->scopedKey($node);
 
         $node->setAttribute($node->getLeftColumnName(), $this->getNextBound($k));
         $node->setAttribute($node->getDepthColumnName(), $depth);
 
+        /** @var Node $child */
         foreach ($this->children($node) as $child) {
             $this->rebuildBounds($child, $depth + 1);
         }
@@ -99,10 +95,9 @@ class SetBuilder
     /**
      * Return all children for the specified node.
      *
-     * @param   Baum\Node $node
-     * @return  Illuminate\Database\Eloquent\Collection
+     * @return  Collection<int,Node>
      */
-    public function children($node)
+    public function children(Node $node): Collection
     {
         $query = $this->node->newQuery();
 
@@ -124,19 +119,19 @@ class SetBuilder
     /**
      * Return an array of the scoped attributes of the supplied node.
      *
-     * @param   Baum\Node $node
-     * @return  array
+     * @return  array<string,mixed>
      */
-    protected function scopedAttributes($node)
+    protected function scopedAttributes(Node $node): array
     {
         $keys = $this->node->getScopedColumns();
 
-        if (count($keys) == 0) {
+        if (count($keys) === 0) {
             return [];
         }
 
         $values = array_map(function ($column) use ($node) {
-            return $node->getAttribute($column);}, $keys);
+            return $node->getAttribute($column);
+        }, $keys);
 
         return array_combine($keys, $values);
     }
@@ -144,18 +139,15 @@ class SetBuilder
     /**
      * Return a string-key for the current scoped attributes. Used for index
      * computing when a scope is defined (acsts as an scope identifier).
-     *
-     * @param   Baum\Node $node
-     * @return  string
      */
-    protected function scopedKey($node)
+    protected function scopedKey(Node $node): string
     {
         $attributes = $this->scopedAttributes($node);
 
         $output = [];
 
         foreach ($attributes as $fld => $value) {
-            $output[] = $this->qualify($fld) . '=' . (is_null($value) ? 'NULL' : $value);
+            $output[] = $this->qualify($fld) . '=' . ($value === null ? 'NULL' : $value);
         }
 
         // NOTE: Maybe an md5 or something would be better. Should be unique though.
@@ -164,13 +156,10 @@ class SetBuilder
 
     /**
      * Return next index bound value for the given key (current scope identifier).
-     *
-     * @param   string  $key
-     * @return  int
      */
-    protected function getNextBound($key)
+    protected function getNextBound(string $key): int
     {
-        if (false === array_key_exists($key, $this->bounds)) {
+        if (array_key_exists($key, $this->bounds) === false) {
             $this->bounds[$key] = 0;
         }
 
@@ -181,10 +170,8 @@ class SetBuilder
 
     /**
      * Get the fully qualified value for the specified column.
-     *
-     * @return string
      */
-    protected function qualify($column)
+    protected function qualify(string $column): string
     {
         return $this->node->getTable() . '.' . $column;
     }

@@ -287,14 +287,14 @@ class CategoryHierarchyTest extends CategoryTestCase
 
         $parent = $this->categories('Root 1');
 
-        $this->assertEquals([$parent], $parent->getDescendantsAndSelf(0)->all());
+        $this->assertEquals([$parent], $parent->getDescendantsAndSelf(['*'], 0)->all());
 
         $this->assertEquals([
       $parent,
       $this->categories('Child 1'),
       $this->categories('Child 2'),
       $this->categories('Child 3'),
-    ], $parent->getDescendantsAndSelf(1)->all());
+    ], $parent->getDescendantsAndSelf(['*'], 1)->all());
 
         $this->assertEquals([
       $parent,
@@ -302,7 +302,7 @@ class CategoryHierarchyTest extends CategoryTestCase
       $this->categories('Child 2'),
       $this->categories('Child 2.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendantsAndSelf(2)->all());
+    ], $parent->getDescendantsAndSelf(['*'], 2)->all());
 
         $this->assertEquals([
       $parent,
@@ -311,7 +311,7 @@ class CategoryHierarchyTest extends CategoryTestCase
       $this->categories('Child 2.1'),
       $this->categories('Child 2.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendantsAndSelf(3)->all());
+    ], $parent->getDescendantsAndSelf(['*'], 3)->all());
 
         $this->assertEquals([
       $parent,
@@ -321,7 +321,7 @@ class CategoryHierarchyTest extends CategoryTestCase
       $this->categories('Child 2.1.1'),
       $this->categories('Child 2.1.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendantsAndSelf(4)->all());
+    ], $parent->getDescendantsAndSelf(['*'], 4)->all());
 
         $this->assertEquals([
       $parent,
@@ -332,7 +332,7 @@ class CategoryHierarchyTest extends CategoryTestCase
       $this->categories('Child 2.1.1.1'),
       $this->categories('Child 2.1.1.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendantsAndSelf(10)->all());
+    ], $parent->getDescendantsAndSelf(['*'], 10)->all());
     }
 
     public function testGetDescendants()
@@ -357,37 +357,28 @@ class CategoryHierarchyTest extends CategoryTestCase
 
         $parent = $this->categories('Root 1');
 
-        $this->assertEmpty($parent->getDescendants(0)->all());
+        $this->assertEmpty($parent->getDescendants(['*'], 0)->all());
 
         $this->assertEquals([
       $this->categories('Child 1'),
       $this->categories('Child 2'),
       $this->categories('Child 3'),
-    ], $parent->getDescendants(1)->all());
-
-        $this->assertEquals([
-      $this->categories('Child 1'),
-      $this->categories('Child 2'),
-      $this->categories('Child 2.1'),
-      $this->categories('Child 3'),
-    ], $parent->getDescendants(2)->all());
+    ], $parent->getDescendants(['*'], 1)->all());
 
         $this->assertEquals([
       $this->categories('Child 1'),
       $this->categories('Child 2'),
       $this->categories('Child 2.1'),
-      $this->categories('Child 2.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendants(3)->all());
+    ], $parent->getDescendants(['*'], 2)->all());
 
         $this->assertEquals([
       $this->categories('Child 1'),
       $this->categories('Child 2'),
       $this->categories('Child 2.1'),
       $this->categories('Child 2.1.1'),
-      $this->categories('Child 2.1.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendants(4)->all());
+    ], $parent->getDescendants(['*'], 3)->all());
 
         $this->assertEquals([
       $this->categories('Child 1'),
@@ -395,9 +386,8 @@ class CategoryHierarchyTest extends CategoryTestCase
       $this->categories('Child 2.1'),
       $this->categories('Child 2.1.1'),
       $this->categories('Child 2.1.1.1'),
-      $this->categories('Child 2.1.1.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendants(5)->all());
+    ], $parent->getDescendants(['*'], 4)->all());
 
         $this->assertEquals([
       $this->categories('Child 1'),
@@ -407,7 +397,17 @@ class CategoryHierarchyTest extends CategoryTestCase
       $this->categories('Child 2.1.1.1'),
       $this->categories('Child 2.1.1.1.1'),
       $this->categories('Child 3'),
-    ], $parent->getDescendants(10)->all());
+    ], $parent->getDescendants(['*'], 5)->all());
+
+        $this->assertEquals([
+      $this->categories('Child 1'),
+      $this->categories('Child 2'),
+      $this->categories('Child 2.1'),
+      $this->categories('Child 2.1.1'),
+      $this->categories('Child 2.1.1.1'),
+      $this->categories('Child 2.1.1.1.1'),
+      $this->categories('Child 3'),
+    ], $parent->getDescendants(['*'], 10)->all());
     }
 
     public function testDescendantsRecursesChildren()
