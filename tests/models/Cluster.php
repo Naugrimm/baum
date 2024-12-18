@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+declare(strict_types=1);
+
 use Baum\Node;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cluster extends Node
 {
@@ -11,18 +13,18 @@ class Cluster extends Node
 
     public $timestamps = false;
 
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
         static::creating(function ($cluster) {
-      $cluster->ensureUuid();
-    });
+            $cluster->ensureUuid();
+        });
     }
 
     public function ensureUuid()
     {
-        if (is_null($this->getAttribute($this->getKeyName()))) {
+        if ($this->getAttribute($this->getKeyName()) === null) {
             $this->setAttribute($this->getKeyName(), $this->generateUuid());
         }
 
@@ -31,13 +33,17 @@ class Cluster extends Node
 
     protected function generateUuid()
     {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-      mt_rand(0, 0xffff),
-      mt_rand(0, 0x0fff) | 0x4000,
-      mt_rand(0, 0x3fff) | 0x8000,
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-    );
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
+        );
     }
 }
 
@@ -53,7 +59,7 @@ class MultiScopedCluster extends Cluster
 
 class OrderedCluster extends Cluster
 {
-    protected $orderColumn = 'name';
+    protected ?string $orderColumn = 'name';
 }
 
 class SoftCluster extends Cluster

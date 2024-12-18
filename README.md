@@ -445,13 +445,13 @@ Similarly, you can limit the descendancy levels with both the `getDescendants` a
 // 1. As usual
 $node->getDescendants();
 // 2. Selecting only some attributes
-$other->getDescendants(array('id', 'parent_id', 'name'));
+$other->getDescendants(['id', 'parent_id', 'name']);
 ...
 // With depth limiting
 // 1. A maximum of 5 levels of children will be returned
-$node->getDescendants(5);
+$node->getDescendants(['*'], 5);
 // 2. A max. of 5 levels of children will be returned selecting only some attrs
-$other->getDescendants(5, array('id', 'parent_id', 'name'));
+$other->getDescendants(['id', 'parent_id', 'name'], 5);
 ```
 
 <a name="custom-sorting-column"></a>

@@ -154,7 +154,6 @@ class NodeModelExtensionsTest extends TestCase
         $builder = $category->newNestedSetQuery();
         $query = $builder->getQuery();
 
-        var_dump($query->wheres);
         $this->assertEquals($query->wheres, []);
         $this->assertNotEmpty($query->orders);
         $this->assertEquals($category->getLeftColumnName(), $category->getOrderColumnName());

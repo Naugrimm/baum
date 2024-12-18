@@ -1,23 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Baum\Extensions\Query;
 
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @template TModelClass of Model
+ */
 class Builder extends BaseBuilder
 {
     /**
      * Replace the "order by" clause of the current query.
      *
-     * @param  string  $column
-     * @param  string  $direction
-     * @return \Illuminate\Database\Query\Builder|static
+     * @return BaseBuilder|Builder
      */
-    public function reOrderBy($column, $direction = 'asc')
+    public function reOrderBy(?string $column, string $direction = 'asc'): BaseBuilder|static
     {
-        $this->orders = null;
+        $this->orders = [];
 
-        if (!is_null($column)) {
+        if ($column !== null) {
             return $this->orderBy($column, $direction);
         }
 
@@ -28,13 +32,12 @@ class Builder extends BaseBuilder
      * Execute an aggregate function on the database.
      *
      * @param  string  $function
-     * @param  array   $columns
-     * @return mixed
+     * @param  array<int,string>   $columns
      */
-    public function aggregate($function, $columns = ['*'])
+    public function aggregate($function, $columns = ['*']): mixed
     {
         // Postgres doesn't like ORDER BY when there's no GROUP BY clause
-        if (!isset($this->groups)) {
+        if (empty($this->groups)) {
             $this->reOrderBy(null);
         }
 
