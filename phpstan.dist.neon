@@ -8,7 +8,7 @@
 
 includes:
     - ./vendor/phpstan/phpstan-deprecation-rules/rules.neon
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
 
 # the file can be found in the CRM
 # @TODO: extract it to a separate package
@@ -45,4 +45,3 @@ parameters:
         #-
         #    message: '#Undefined variable: \$this#'
         #    path: tests/*
-
