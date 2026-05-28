@@ -15,7 +15,5 @@ Homestead.yaml
 Homestead.json
 .env
 *.sublime-workspace
-/composer.lock
-
 /.phpunit.result.cache
 /.phpstan
