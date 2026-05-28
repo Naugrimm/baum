@@ -24,11 +24,11 @@
   ],
   "require": {
     "php": "^8.4",
-    "illuminate/console": "^11.0|^12.0",
-    "illuminate/database": "^11.0|^12.0",
-    "illuminate/events": "^11.0|^12.0",
-    "illuminate/filesystem": "^11.0|^12.0",
-    "illuminate/support": "^11.0|^12.0"
+    "illuminate/console": "^11.0|^12.0|^13",
+    "illuminate/database": "^11.0|^12.0|^13",
+    "illuminate/events": "^11.0|^12.0|^13",
+    "illuminate/filesystem": "^11.0|^12.0|^13",
+    "illuminate/support": "^11.0|^12.0|^13"
   },
   "require-dev": {
     "phpunit/phpunit": "^11.0",
@@ -39,7 +39,7 @@
     "phpstan/phpstan-deprecation-rules": "^2.0",
     "symplify/coding-standard": "^12.0",
     "symplify/easy-coding-standard": "^12.0",
-    "orchestra/testbench": "^9.3|^10",
+    "orchestra/testbench": "^9.3|^10|^11",
     "larastan/larastan": "^3.10"
   },
   "autoload": {

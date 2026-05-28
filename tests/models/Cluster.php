@@ -13,9 +13,9 @@ class Cluster extends Node
 
     public $timestamps = false;
 
-    protected static function boot(): void
+    protected static function booted(): void
     {
-        parent::boot();
+        parent::booted();
 
         static::creating(function ($cluster) {
             $cluster->ensureUuid();

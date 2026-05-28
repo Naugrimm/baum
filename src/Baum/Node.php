@@ -102,9 +102,9 @@ abstract class Node extends Model
      *    6. (optional) "restore": After having restored a soft-deleted node,
      *    restore all of its descendants.
      */
-    protected static function boot(): void
+    protected static function booted(): void
     {
-        parent::boot();
+        parent::booted();
 
         static::creating(function ($node) {
             $node->setDefaultLeftAndRight();
